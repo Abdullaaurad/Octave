@@ -1,0 +1,1 @@
+fprintf("Inf/i = %f", Inf/i );

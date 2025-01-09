@@ -1,0 +1,1 @@
+fprintf("Inf+Inf = %f", Inf+Inf );

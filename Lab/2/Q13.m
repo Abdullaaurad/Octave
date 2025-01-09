@@ -1,0 +1,1 @@
+fprintf("Square root -Inf = %f", sqrt(-Inf) );

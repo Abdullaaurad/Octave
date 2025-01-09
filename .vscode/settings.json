@@ -1,0 +1,28 @@
+{
+  "octave.path": "C:/Program Files/GNU Octave/Octave-9.2.0/mingw64/bin/octave-cli.exe",
+  "octave.enableKernel": true,
+  "octave.linterEnabled": true,
+  "octave.formattingEnabled": true,
+  "octave.runSettings": {
+    "arguments": [],
+    "runInTerminal": true,
+    "externalConsole": false
+  },
+  "octave.includePaths": [
+    "C:/Users/97150/Desktop/Codes/Octave"
+  ],
+  "octave.excludePaths": [
+    "**/build",
+    "**/.*",
+    "**/.vscode/**"
+  ],
+  "octave.debugSettings": {
+    "enabled": true,
+    "gdbPath": "C:/path/to/gdb.exe"
+  },
+  "files.exclude": {
+    "**/.vscode": true,
+    "**/*.o": true,
+    "**/*.mex": true
+  }
+}
