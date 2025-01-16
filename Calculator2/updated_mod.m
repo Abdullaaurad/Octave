@@ -22,16 +22,18 @@ function updated_equation = updated_mod(equation)
             operand2 = strtrim(equation(i+3:k-1)); % Second operand
 
             % Replace "a mod b" with "mod(a,b)"
-            updated_equation = [equation(1:j-1), 'mod(', operand1, ',', operand2, ')'];
+            updated_equation = [updated_equation, equation(1:j-1), 'mod(', operand1, ',', operand2, ')'];
 
-            % Update the index and equation
+            % Update the equation to exclude the processed part
             equation = equation(k:end);
+            i = 1; % Restart parsing from the beginning of the remaining equation
         else
-            % Append the current character if not part of 'mod'
-            updated_equation = [updated_equation, equation(i)];
+            % Append the current character to the updated equation
             i = i + 1;
         end
     end
 
+    % Append any remaining part of the equation
+    updated_equation = [updated_equation, equation];
     disp(['Updated Equation: ', updated_equation]); % Display result
 end
