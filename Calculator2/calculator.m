@@ -70,6 +70,8 @@ function calculator()
         end
     end
 
+    memory = []; % Initialize memory as an empty array
+
     % Button logic
     function button_logic(button_value)
         functions_with_parenthesis = {'sin', 'cos', 'tan', 'sinh', 'cosh', 'tanh', 'log', 'ln', '√', '∛', 'BIN', 'OCT', 'HEX', 'ABS'};
@@ -99,6 +101,64 @@ function calculator()
                 catch
                     set(result_display, 'String', 'Error');
                 end
+            case 'ANS'
+                if isempty(memory)
+                    set(result_display, 'String', 'Memory Empty');
+                else
+                    equation = [equation, num2str(memory(end))]; % Use the most recent memory value
+                    set(equation_display, 'String', equation);
+                end            
+            case 'M+'
+                try
+                    if isempty(get(result_display, 'String')) && ~isempty(equation)
+                        formatted_equation = format_equation(equation);
+                        current_result = eval(formatted_equation);
+                        memory = [memory, current_result];
+                        set(result_display, 'String', 'Stored in Memory');
+                    else
+                        % Store the result directly from the display
+                        current_result = str2double(get(result_display, 'String'));
+                        if isnan(current_result)
+                            return; % Do nothing if the result is not a valid number
+                        end
+                        memory = [memory, current_result]; % Append the result to memory
+                        set(result_display, 'String', 'Stored in Memory');
+                    end
+                catch
+                    set(result_display, 'String', 'Error');
+                end
+                
+            case 'M-'
+                try
+                    if ~isempty(equation) && isempty(get(result_display, 'String'))
+                        % Evaluate the equation first
+                        formatted_equation = format_equation(equation);
+                        current_result = eval(formatted_equation);
+                    else
+                        % Use the currently displayed result
+                        current_result = str2double(get(result_display, 'String'));
+                    end
+            
+                    % If memory is empty, show a message
+                    if isempty(memory)
+                        set(result_display, 'String', 'Memory Empty');
+                        return;
+                    end
+            
+                    % Remove the last value from memory
+                    memory(end) = []; % Pop the last value from the array
+                    set(result_display, 'String', 'Last Memory Removed');
+                catch
+                    set(result_display, 'String', 'Error');
+                end            
+            case 'MR'
+                if isempty(memory)
+                    set(result_display, 'String', 'Memory Empty');
+                else
+                    memory_str = sprintf('%.4g, ', memory);
+                    memory_str = memory_str(1:end-2);
+                    set(result_display, 'String', memory_str);
+                end
             case 'C' % Clear equation
                 equation = '';
                 set(equation_display, 'String', '');
@@ -121,21 +181,19 @@ function calculator()
         end
     end
 
-    % Backspace logic
     function equation = backspace(equation)
         if ~isempty(equation)
             equation = equation(1:end-1);
         end
     end
 
-    % Angle conversion logic for trigonometric functions
     function result = angle_conversion(angle_expr, trig_func)
         if strcmp(angle_mode, 'DEG')
             result = sprintf('(pi/180)*%s', angle_expr);
         elseif strcmp(angle_mode, 'GRAD')
             result = sprintf('(pi/200)*%s', angle_expr);
         else
-            result = angle_expr; % RAD mode (no conversion needed)
+            result = angle_expr;
         end
     end
 
@@ -144,6 +202,9 @@ function calculator()
         formatted_equation = updated_pi(formatted_equation);
         formatted_equation = updated_fac(formatted_equation);
         formatted_equation = parentheses(formatted_equation);
+        formatted_equation = strrep(formatted_equation, 'MIN', 'min');
+        formatted_equation = strrep(formatted_equation, 'MAX', 'max');
+        formatted_equation = strrep(formatted_equation, 'AVG', 'avg');
         formatted_equation = strrep(formatted_equation, 'MOD', 'mod');
         formatted_equation = updated_mod(formatted_equation);
         formatted_equation = updated_cuberoot(formatted_equation);
