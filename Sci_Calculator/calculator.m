@@ -19,16 +19,16 @@ function calculator()
 
     % Button layout
     buttons = {
-        'INV', 'DEG', 'RAD', 'GRAD', 'MOD', 'AC';
-        'sinh', 'sin', '7', '8', '9', '/';
-        'cosh', 'cos', '4', '5', '6', '*';
-        'tanh', 'tan', '1', '2', '3', '-';
-        'pi', 'e', '0', '.', '=', '+';
-        'x²', 'x³', '√', '∛', '^', 'mod';
-        'log', ',', '(', ')', '←', 'C';
-        'MIN', 'MAX', 'AVG', 'M+', 'M-', 'MR';
-        'BIN', 'OCT', 'HEX', 'ABS', 'RAND', 'ANS'
-    };
+            'INV', 'DEG', 'RAD', 'GRAD', 'MOD', 'AC';
+            'sinh', 'sin', '7', '8', '9', '/';
+            'cosh', 'cos', '4', '5', '6', '*';
+            'tanh', 'tan', '1', '2', '3', '-';
+            'pi', 'e', '0', '.', '^', '+';
+            'x²', 'x³', '√', '∛', '=', '';
+            'log', ',', '(', ')', '←', 'C';
+            'MIN', 'MAX', 'AVG', 'M+', 'M-', 'MR';
+            'BIN', 'OCT', 'HEX', 'ABS', 'RAND', 'ANS'
+            };
 
     % Dimensions and spacing for buttons
     button_width = 80;
@@ -44,18 +44,30 @@ function calculator()
     angle_mode = 'RAD'; % Default angle mode (RAD)
 
     % Create buttons
+    % Inside the loop where you create buttons:
     for i = 1:rows
+
         for j = 1:cols
+
+            if i == 6 && j == 6
+                continue
+            end
+
             button_text = buttons{i, j};
             x_pos = x_start + (j - 1) * (button_width + x_spacing);
             y_pos = y_start - (i - 1) * (button_height + y_spacing);
+
+            % Special handling for the "=" button to make it span two columns
+            if strcmp(button_text, '=')
+                button_width = button_width * 2 + 10;  % Double the width
+            end
 
             % Set button color
             if strcmp(button_text, '=')
                 bg_color = [1, 0.4, 0.4]; % Red for "=" button
             elseif ismember(button_text, {'C', 'AC', '←'})
                 bg_color = [1, 0.8, 0.6]; % Light orange for control buttons
-            elseif ismember(button_text, {'+', '-', '*', '/', '^', 'mod'})
+            elseif ismember(button_text, {'+', '-', '*', '/', 'mod'})
                 bg_color = [0.6, 0.8, 1]; % Light blue for operators
             else
                 bg_color = [0.9, 0.9, 0.9]; % Default button color
@@ -67,7 +79,11 @@ function calculator()
                 'FontSize', 12, ...
                 'BackgroundColor', bg_color, ...
                 'Callback', @(src, ~) button_logic(get(src, 'String')));
+
+            % Reset button width back to normal after the "=" button
+            button_width = 80;
         end
+
     end
 
     memory = []; % Initialize memory as an empty array
@@ -75,14 +91,15 @@ function calculator()
     % Button logic
     function button_logic(button_value)
         functions_with_parenthesis = {'sin', 'cos', 'tan', 'sinh', 'cosh', 'tanh', 'log', 'ln', '√', '∛', 'BIN', 'OCT', 'HEX', 'ABS'};
+
         switch button_value
-            case 'DEG' % Switch to DEG mode
+            case 'DEG'
                 angle_mode = 'DEG';
                 set(result_display, 'String', 'Mode: DEG');
-            case 'RAD' % Switch to RAD mode
+            case 'RAD'
                 angle_mode = 'RAD';
                 set(result_display, 'String', 'Mode: RAD');
-            case 'GRAD' % Switch to GRAD mode
+            case 'GRAD'
                 angle_mode = 'GRAD';
                 set(result_display, 'String', 'Mode: GRAD');
             case {'sin', 'cos', 'tan', 'sinh', 'cosh', 'tanh'}
@@ -92,25 +109,37 @@ function calculator()
                 else
                     equation = [equation, button_value, '('];
                 end
+
                 set(equation_display, 'String', equation);
-            case '=' % Evaluate the equation
+            case '='
                 try
                     formatted_equation = format_equation(equation);
                     result = eval(formatted_equation);
                     set(result_display, 'String', num2str(result));
                 catch
-                    set(result_display, 'String', 'Error');
+                    set(result_display, 'String', 'Empty');
                 end
+
             case 'ANS'
+
                 if isempty(memory)
                     set(result_display, 'String', 'Memory Empty');
                 else
                     equation = [equation, num2str(memory(end))]; % Use the most recent memory value
                     set(equation_display, 'String', equation);
-                end            
+                end
+
+            case 'x²'
+                equation = [equation, '²'];
+                set(equation_display, 'String', equation);
+            case 'x³'
+                equation = [equation, '³'];
+                set(equation_display, 'String', equation);
             case 'M+'
+
                 try
-                    if isempty(get(result_display, 'String')) && ~isempty(equation)
+
+                    if isempty(get(result_display, 'String')) &&~isempty(equation)
                         formatted_equation = format_equation(equation);
                         current_result = eval(formatted_equation);
                         memory = [memory, current_result];
@@ -118,18 +147,23 @@ function calculator()
                     else
                         % Store the result directly from the display
                         current_result = str2double(get(result_display, 'String'));
+
                         if isnan(current_result)
                             return; % Do nothing if the result is not a valid number
                         end
+
                         memory = [memory, current_result]; % Append the result to memory
                         set(result_display, 'String', 'Stored in Memory');
                     end
+
                 catch
                     set(result_display, 'String', 'Error');
                 end
-                
+
             case 'M-'
+
                 try
+
                     if ~isempty(equation) && isempty(get(result_display, 'String'))
                         % Evaluate the equation first
                         formatted_equation = format_equation(equation);
@@ -138,56 +172,65 @@ function calculator()
                         % Use the currently displayed result
                         current_result = str2double(get(result_display, 'String'));
                     end
-            
+
                     % If memory is empty, show a message
                     if isempty(memory)
                         set(result_display, 'String', 'Memory Empty');
                         return;
                     end
-            
+
                     % Remove the last value from memory
                     memory(end) = []; % Pop the last value from the array
                     set(result_display, 'String', 'Last Memory Removed');
                 catch
                     set(result_display, 'String', 'Error');
-                end            
+                end
+
             case 'MR'
+
                 if isempty(memory)
                     set(result_display, 'String', 'Memory Empty');
                 else
                     memory_str = sprintf('%.4g, ', memory);
-                    memory_str = memory_str(1:end-2);
+                    memory_str = memory_str(1:end - 2);
                     set(result_display, 'String', memory_str);
                 end
-            case 'C' % Clear equation
+
+            case 'C'% Clear equation
                 equation = '';
                 set(equation_display, 'String', '');
                 set(result_display, 'String', '');
-            case 'AC' % Clear all
+            case 'AC'% Clear all
                 equation = '';
                 memory = [];
                 set(equation_display, 'String', '');
                 set(result_display, 'String', '');
-            case '←' % Backspace
+            case '←'% Backspace
                 equation = backspace(equation);
                 set(equation_display, 'String', equation);
             otherwise % Append other button values
+
                 if ismember(button_value, functions_with_parenthesis)
                     equation = [equation, button_value, '('];
                 else
                     equation = [equation, button_value];
                 end
+
                 set(equation_display, 'String', equation);
         end
+
     end
 
     function equation = backspace(equation)
+
         if ~isempty(equation)
-            equation = equation(1:end-1);
+            equation = equation(1:end - 1);
         end
+
     end
 
     function result = angle_conversion(angle_expr, trig_func)
+
         if strcmp(angle_mode, 'DEG')
             result = sprintf('(pi/180)*%s', angle_expr);
         elseif strcmp(angle_mode, 'GRAD')
@@ -195,6 +238,7 @@ function calculator()
         else
             result = angle_expr;
         end
+
     end
 
     function formatted_equation = format_equation(eq)
@@ -217,6 +261,7 @@ function calculator()
         formatted_equation = strrep(formatted_equation, '∛', 'nthroot');
         formatted_equation = strrep(formatted_equation, 'e', 'exp(1)');
     end
+
     pause;
 
 end
