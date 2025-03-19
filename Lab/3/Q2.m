@@ -1,5 +1,5 @@
 w = ones (11, 11);
-
+l = eye(11, 11);
 u = zeros(11, 11);
 
 fprintf ("Array W \n");

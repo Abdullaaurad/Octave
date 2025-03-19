@@ -20,3 +20,6 @@ legend;
 hold off;
 
 pause;
+
+A = randi([1, 80], 10, 7);  % 10 rows, 7 columns, integers between 1 and 80
+disp(A);

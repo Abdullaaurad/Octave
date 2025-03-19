@@ -1,0 +1,22 @@
+# Created by Octave 9.2.0, Thu Mar 06 11:58:18 2025 GMT <unknown@Sheiks-Laptop>
+# name: m
+# type: sq_string
+# elements: 1
+# length: 10
+SA Abdulla
+
+
+# name: k
+# type: sq_string
+# elements: 1
+# length: 10
+I Love You
+
+
+# name: n
+# type: sq_string
+# elements: 1
+# length: 7
+Fadhiya
+
+
